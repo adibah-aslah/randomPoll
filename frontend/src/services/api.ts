@@ -1,3 +1,4 @@
+import type { RawPollResponse } from "@/types/poll";
 import axios from "axios";
 
 const apiClient = axios.create({
@@ -6,8 +7,9 @@ const apiClient = axios.create({
 });
 
 export const pollService = {
-  getPolls: async () => {
-    const { data } = await apiClient.get("/poll");
+  // Explicitly type the Axios response
+  getPolls: async (): Promise<RawPollResponse[]> => {
+    const { data } = await apiClient.get<RawPollResponse[]>("/poll");
     return data;
   },
 };
