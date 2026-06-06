@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
 import type { Poll, PollOption } from "@/types/poll";
 import { getVotePercentage } from "@/utils/format";
+import { Card, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface PollCardProps {
   poll: Poll;
@@ -34,16 +37,19 @@ export const PollCard: React.FC<PollCardProps> = React.memo(
               order: layout.header.order || 1,
               height: layout.header.height,
               content: (
-                <div className="p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                  <span className="text-sm font-bold px-4 py-2 bg-primary/10 text-primary rounded-xl uppercase tracking-wider">
-                    {poll.category || "Community"}
-                  </span>
-                  {poll.createdAt && (
-                    <span className="text-xs text-muted-foreground font-mono ml-auto">
-                      {new Date(poll.createdAt).toLocaleDateString()}
+                <CardHeader className="pt-6 pb-2">
+                  <div className="flex flex-row items-center justify-between w-full">
+                    <span className="text-[11px] font-black px-3 py-1.5 bg-primary/10 text-primary rounded-lg uppercase tracking-widest shrink-0">
+                      {poll.category || "Community"}
                     </span>
-                  )}
-                </div>
+
+                    {poll.createdAt && (
+                      <span className="text-[10px] text-muted-foreground font-mono shrink-0">
+                        {new Date(poll.createdAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </CardHeader>
               ),
             },
           ]
@@ -81,7 +87,7 @@ export const PollCard: React.FC<PollCardProps> = React.memo(
                       <button
                         key={index}
                         onClick={() => onVote?.(poll.id, index)}
-                        className="relative w-full h-14 p-4 rounded-2xl bg-white/60 backdrop-blur hover:bg-primary/5 shadow-sm hover:shadow-md transition-all"
+                        className="relative w-full h-14 p-4 rounded-2xl bg-white/80 backdrop-blur shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 transition-all duration-200 border border-white/20"
                       >
                         <div
                           className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/80 rounded-2xl"
@@ -139,27 +145,35 @@ export const PollCard: React.FC<PollCardProps> = React.memo(
     ];
 
     return (
-      <div
-        className={`
-        shadow-2xl sm:shadow-3xl w-full max-w-sm sm:max-w-md lg:max-w-lg h-[500px] rounded-3xl mx-auto overflow-hidden
-        bg-white/95 backdrop-blur-xl ring-1 ring-border/10 ${className}
-        grid gap-0 grid-template-rows: repeat(${sections.length}, minmax(0, 1fr))
-      `}
+      <Card
+        className={cn(
+          "relative w-full max-w-sm sm:max-w-md lg:max-w-lg",
+          "min-h-[60vh] max-h-[90vh]", // Dynamic height based on viewport
+          "rounded-3xl mx-auto overflow-hidden shadow-2xl border-2 border-primary/5",
+          "hover:shadow-primary/10 transition-shadow duration-300",
+          "ring-1 ring-black/5 dark:ring-white/10",
+          "flex flex-col gap-0! py-0!", // Resetting the Card component defaults
+          className,
+        )}
       >
         {sections
           .sort((a, b) => a.order! - b.order!)
           .map((section, index) => (
             <div
               key={index}
-              className={`grid-in-${index + 1} ${section.height}`}
+              className={cn(
+                "w-full flex flex-col",
+                section.height === "auto" ? "flex-none" : "flex-1 min-h-0",
+              )}
               style={{
-                gridRow: `span ${section.height === "auto" ? 1 : undefined}`,
+                // Percentage heights now work correctly within the vh container
+                height: section.height.includes("%") ? section.height : "auto",
               }}
             >
               {section.content}
             </div>
           ))}
-      </div>
+      </Card>
     );
   },
 );
