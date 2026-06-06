@@ -1,0 +1,57 @@
+import { CustomButton } from "@/components/customComponents/customButton";
+import { CustomDialog } from "@/components/customComponents/customDialog";
+import { ThemeToggle } from "@/pages/homePage/components/themeToggle";
+import { LuPlus, LuSave } from "react-icons/lu";
+import { CreatePollForm } from "@/pages/homePage/components/createPollForm";
+
+export const PollHeader = () => {
+  return (
+    <header className="w-full px-6 pt-10">
+      <div className="flex flex-col items-center w-full max-w-7xl mx-auto">
+        {/**
+         * Row container for toggle and create poll buttons
+         */}
+        <div className="w-full flex items-center justify-between">
+          <CustomDialog
+            title="Create New Poll"
+            description="Fill out the details below to start a community vote."
+            trigger={
+              <CustomButton>
+                <LuPlus />
+                <span>Create Poll</span>
+              </CustomButton>
+            }
+            footer={
+              <>
+                <CustomButton className="w-full sm:w-auto" variant="outline">
+                  Cancle
+                </CustomButton>
+                <CustomButton className="w-full sm:w-auto">
+                  <LuSave className="mr-2 h-4 w-4" />
+                  Publish Poll
+                </CustomButton>
+              </>
+            }
+          >
+            <CreatePollForm />
+          </CustomDialog>
+          {/* Right Side - theme toggle */}
+          <ThemeToggle />
+        </div>
+
+        <div className="flex flex-col items-center text-center">
+          <h1
+            className="text-3xl font-black py-2 drop-shadow-md 
+               bg-linear-to-r from-primary via-white/30 to-secondary 
+               bg-clip-text text-primary"
+          >
+            Community Polls
+          </h1>
+          <p className="text-muted-foreground max-w-xl mx-auto -mt-2">
+            Vote and see real-time results
+          </p>
+        </div>
+      </div>
+    </header>
+  );
+};
