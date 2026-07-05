@@ -137,7 +137,7 @@ export const PollCard: React.FC<PollCardProps> = React.memo(
         : []),
 
       // Custom sections
-      ...(layout.custom || []).map((custom, i) => ({
+      ...(layout.custom || []).map((custom) => ({
         order: custom.order,
         height: custom.height,
         content: custom.content,
