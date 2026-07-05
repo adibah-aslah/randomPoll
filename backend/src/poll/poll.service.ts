@@ -1,38 +1,70 @@
-import { Injectable } from '@nestjs/common';
-// import { CreatePollDto } from './dto/create-poll.dto';
-// import { UpdatePollDto } from './dto/update-poll.dto';
-import { Poll } from '@/poll/entities/poll.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreatePollDto } from './dto/create-poll.dto';
+import { UpdatePollDto } from './dto/update-poll.dto';
 
 @Injectable()
 export class PollService {
-  private polls: Poll[] = [
-    {
-      id: '1',
-      question: 'What is your favorite tech stack?',
-      options: [
-        { text: 'React & NestJS', votes: 13 },
-        { text: 'Next.js', votes: 53 },
-      ],
-    },
-  ];
+  constructor(private prisma: PrismaService) {}
 
-  // create(createPollDto: CreatePollDto) {
-  //   return 'This action adds a new poll';
-  // }
-
-  findAll(): Poll[] {
-    return this.polls;
+  async create(dto: CreatePollDto) {
+    return this.prisma.poll.create({
+      data: {
+        question: dto.question,
+        category: dto.category ?? 'Community',
+        options: {
+          create: dto.options.map((text) => ({ text })),
+        },
+      },
+      include: { options: true },
+    });
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} poll`;
-  // }
+  async findAll() {
+    return this.prisma.poll.findMany({
+      include: { options: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 
-  // update(id: number, updatePollDto: UpdatePollDto) {
-  //   return `This action updates a #${id} poll`;
-  // }
+  async findOne(id: string) {
+    const poll = await this.prisma.poll.findUnique({
+      where: { id },
+      include: { options: true },
+    });
+    if (!poll) throw new NotFoundException(`Poll ${id} tidak wujud`);
+    return poll;
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} poll`;
-  // }
+  async update(id: string, dto: UpdatePollDto) {
+    await this.findOne(id); // pastikan wujud dulu
+
+    // Nota: kalau dto.options disertakan, kita cuma update question/category kat sini.
+    // Update options (tambah/buang) perlu logic berasingan sebab ia relation.
+    return this.prisma.poll.update({
+      where: { id },
+      data: {
+        question: dto.question,
+        category: dto.category,
+      },
+      include: { options: true },
+    });
+  }
+
+  async vote(optionId: string) {
+    const option = await this.prisma.pollOption.findUnique({
+      where: { id: optionId },
+    });
+    if (!option) throw new NotFoundException(`Option ${optionId} tidak wujud`);
+
+    return this.prisma.pollOption.update({
+      where: { id: optionId },
+      data: { votes: { increment: 1 } },
+    });
+  }
+
+  async remove(id: string) {
+    await this.findOne(id);
+    return this.prisma.poll.delete({ where: { id } });
+  }
 }
