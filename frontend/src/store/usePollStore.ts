@@ -15,6 +15,7 @@ interface PollState {
   votePollLocal: (pollId: string, optionIndex: number) => void;
   createPoll: (pollData: {
     question: string;
+    category?: string;
     options: string[];
   }) => Promise<boolean>;
 }
