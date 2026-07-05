@@ -9,15 +9,15 @@ interface PollGridProps {
 export const PollGrid = ({ polls, onVote }: PollGridProps) => {
   if (polls.length === 0) return null;
 
-  const featuredPoll = polls[0];
-  const morePolls = polls.slice(1);
+  const activePoll = polls[0];
+  // const morePolls = polls.slice(1);
 
   return (
     <>
       {/**Feature Section */}
       <div className="w-full max-w-2xl mx-auto mb-20">
         <PollCard
-          poll={featuredPoll}
+          poll={activePoll}
           onVote={onVote}
           layout={{
             header: { height: "auto" },
@@ -28,7 +28,7 @@ export const PollGrid = ({ polls, onVote }: PollGridProps) => {
         />
       </div>
       {/**Grid Section */}
-      {morePolls.length > 0 && (
+      {/* {morePolls.length > 0 && (
         <section className="space-y-12">
           <h2 className="text-3xl font-bold font-heading text-center mb-12 bg-linear-to-r from-foreground to-primary/70 bg-clip-text">
             More Polls
@@ -48,7 +48,7 @@ export const PollGrid = ({ polls, onVote }: PollGridProps) => {
             ))}
           </div>
         </section>
-      )}
+      )} */}
     </>
   );
 };
