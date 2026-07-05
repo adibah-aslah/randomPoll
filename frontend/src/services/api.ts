@@ -12,4 +12,12 @@ export const pollService = {
     const { data } = await apiClient.get<RawPollResponse[]>("/poll");
     return data;
   },
+
+  createPoll: async (pollData: {
+    question: string;
+    options: string[];
+  }): Promise<RawPollResponse> => {
+    const { data } = await apiClient.post<RawPollResponse>("/poll", pollData);
+    return data;
+  },
 };

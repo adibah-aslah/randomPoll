@@ -3,8 +3,12 @@ import { CustomDialog } from "@/components/customComponents/customDialog";
 import { ThemeToggle } from "@/pages/homePage/components/themeToggle";
 import { LuPlus, LuSave } from "react-icons/lu";
 import { CreatePollForm } from "@/pages/homePage/components/createPollForm";
+import { useState } from "react";
+import { usePollStore } from "@/store/usePollStore";
 
 export const PollHeader = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isLoading } = usePollStore();
   return (
     <header className="w-full px-6 pt-10">
       <div className="flex flex-col items-center w-full max-w-7xl mx-auto">
@@ -13,27 +17,39 @@ export const PollHeader = () => {
          */}
         <div className="w-full flex items-center justify-between">
           <CustomDialog
+            open={isOpen}
+            onOpenChange={setIsOpen}
             title="Create New Poll"
             description="Fill out the details below to start a community vote."
             trigger={
-              <CustomButton>
+              <CustomButton onClick={() => setIsOpen(true)}>
                 <LuPlus />
                 <span>Create Poll</span>
               </CustomButton>
             }
             footer={
               <>
-                <CustomButton className="w-full sm:w-auto" variant="outline">
-                  Cancle
+                <CustomButton
+                  className="w-full sm:w-auto"
+                  variant="outline"
+                  onClick={() => setIsOpen(false)}
+                  disabled={isLoading}
+                >
+                  Cancel
                 </CustomButton>
-                <CustomButton className="w-full sm:w-auto">
+                <CustomButton
+                  type="submit"
+                  form="create-poll-form"
+                  className="w-full sm:w-auto"
+                  disabled={isLoading}
+                >
                   <LuSave className="mr-2 h-4 w-4" />
-                  Publish Poll
+                  {isLoading ? "Publishing..." : "Publish Poll"}
                 </CustomButton>
               </>
             }
           >
-            <CreatePollForm />
+            <CreatePollForm onSuccess={() => setIsOpen(false)} />
           </CustomDialog>
           {/* Right Side - theme toggle */}
           <ThemeToggle />
