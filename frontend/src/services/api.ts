@@ -15,6 +15,7 @@ export const pollService = {
 
   createPoll: async (pollData: {
     question: string;
+    category?: string;
     options: string[];
   }): Promise<RawPollResponse> => {
     const { data } = await apiClient.post<RawPollResponse>("/poll", pollData);
